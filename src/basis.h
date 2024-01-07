@@ -57,6 +57,8 @@ public:
   std::pair<int,int> exchange_move_uppart(void) const;
   std::pair<int,int> exchange_move_frsite(void) const;
   friend std::ostream& operator<<(std::ostream& os, const FockBasis& bs);
+  double marshall_sign() const ;
+  int is_doublon_created() const;
 private:
   mutable RandomGenerator rng_;
   mutable ivector state_;
@@ -79,6 +81,8 @@ private:
   mutable move_t proposed_move_;
   mutable int dblocc_increament_{0};
   //move_type accepted_move;
+  //zero- holon 1 - upspin, -1-downspin, 2 doublon
+
   mutable int mv_upspin_;
   mutable int mv_uphole_;
   mutable int up_fr_state_;

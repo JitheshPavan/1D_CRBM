@@ -122,7 +122,6 @@ void Wavefunction::compute_BCS(const Lattice& lattice, const RealVector& vparams
           phi_k_gradient[k]=(phi_k[k]*ek)/(delta_sc*eps_k);
         }
       }
-      //std::cout << "phi_k["<<k<<"] = "<<phi_k[k]<<"\n"; getchar();
     }
     // pair amplitudes in lattice space
     for (int i=0; i<num_sites_; ++i) {
@@ -140,7 +139,6 @@ void Wavefunction::compute_BCS(const Lattice& lattice, const RealVector& vparams
         }
         psi_(i,j) = ksum/double(lattice.num_kpoints());
         psi_grad(i,j) = ksum_grad/double(lattice.num_kpoints());
-        //std::cout << "phi["<<i<<","<<j<<"] = "<<psi_(i,j)<<"\n"; getchar();
       }
     }
   }

@@ -24,13 +24,11 @@ int VMC::init(void)
   epsilon = 0.0001;
   step = 0.01;
   tol = config.param[5];
-  //std::cout << tol << std::endl; getchar();
- 
+
   sr_matrix.resize(num_vparams,num_vparams);
   U_.resize(num_vparams,num_vparams);
   I.resize(num_vparams,num_vparams);
   grads.resize(num_vparams);
-   std::cout <<"trre"<<std::endl;
   grad_log_psi.resize(num_vparams);
   lambda.resize(num_vparams);
 
@@ -53,11 +51,12 @@ int VMC::init(void)
 
 int VMC::run_simulation(void) 
 {
+
   vparams = (vparams + RealVector::Random(num_vparams,1.0))*range/2.;
+  vparams[num_vparams-1]=0.03;
   std::ofstream file("energy vs iterations.txt");
   std::ofstream vfile("vparams.txt");
   for (int nu=0; nu<iterations; ++nu){
-    std::cout << 'params:'<< vparams;
     config.build(vparams);
     config.init_state();
     for (int n=0; n<warmup_steps; ++n) {
@@ -119,7 +118,7 @@ int VMC::run_simulation(void)
         S_sum += U_sum*grads(j);
       }
       vparams(i) = vparams(i) + step*S_sum; 
-     // std::cout << S_sum<<std::endl;
+           // std::cout << S_sum<<std::endl;
     }
     //init();
     if (nu==iterations-1){

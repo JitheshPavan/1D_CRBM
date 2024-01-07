@@ -56,11 +56,12 @@ void FockBasis::init_spins(const int& num_upspins, const int& num_dnspins)
   else rng_.set_dnhole_generator(0,0);
   // random initial configuration
   set_random();
-  
+
 }
 
 void FockBasis::set_random(void)
 {
+  double_occupancy_=false;
   proposed_move_ = move_t::null;
   state_.setZero();
   std::vector<int> all_up_states(num_sites_);
@@ -72,11 +73,11 @@ void FockBasis::set_random(void)
     spin_id_[state] = i;
     up_states_[i] = state;
   }
-  //std::cout << spin_id_.segment(0,num_sites_).transpose() << std::endl; getchar();
   int j=0;
   for (int i=num_upspins_; i<num_sites_; ++i) {
     uphole_states_[j++] = all_up_states[i];
   }
+
 
   // DN spins & holes
   if (double_occupancy_) {
@@ -123,17 +124,7 @@ void FockBasis::set_random(void)
         num_dblocc_sites_++;
     }
   }
-  /*for (int i = 0; i < num_upspins_; ++i){
-    std::cout << up_states_[i] << "   ";
-  }
-  std::cout << "\n";
-  for (int i = 0; i < num_dnspins_; ++i){
-    std::cout << dn_states_[i] << "   ";
-  }  
-  std::cout << "\n";
-  std::cout<<spin_id_.transpose()<<std::endl; getchar();
-  getchar();*/
-  //std::cout<<state_.transpose()<<std::endl; getchar();
+  double_occupancy_=true;
 }
 
 void FockBasis::set_custom(void)
@@ -189,7 +180,6 @@ bool FockBasis::gen_upspin_hop(void)
   }
   mv_upspin_ = rng_.random_upspin();
   mv_uphole_ = rng_.random_uphole();
-  //std::cout << " rng test = " << spin_site_pair.first << "\n";
   up_fr_state_ = up_states_[mv_upspin_]; 
   up_to_state_ = uphole_states_[mv_uphole_]; 
   if (!double_occupancy_ && state_[num_sites_+up_to_state_]) {
@@ -200,14 +190,12 @@ bool FockBasis::gen_upspin_hop(void)
     proposed_move_=move_t::upspin_hop;
     state_[up_fr_state_] = 0;
     state_[up_to_state_] = 1;
+
     dblocc_increament_ = state_[num_sites_+up_to_state_]; // must be 0 or 1
     dblocc_increament_ -= state_[num_sites_+up_fr_state_];
-    //fr_state = up_fr_state_;
-    //to_state = up_to_state_;
     return true;
   }
-  //std::cout<<state_.transpose()<<std::endl;
-}
+ }
 
 const int& FockBasis::which_upspin(void) const
 {
@@ -546,4 +534,19 @@ std::ostream& operator<<(std::ostream& os, const FockBasis& bs)
   return os;
 }
 
-
+double FockBasis::marshall_sign() const {
+  bool even=true;
+  for(int i=0;i<num_upspins_;++i){
+    if(up_states_[i]%2==1){
+      even= !even ;
+    }
+  }
+  return even ? 1 : -1;
+}
+int FockBasis::is_doublon_created() const {
+  if( proposed_move_== move_t::dnspin_hop || proposed_move_==move_t::upspin_hop){
+    return dblocc_increament_;
+  }else{
+    throw std::range_error("is doublon created error");
+  }
+}

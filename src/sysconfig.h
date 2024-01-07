@@ -37,8 +37,15 @@ public:
   void SR_matrix( RealMatrix& sr_matrix,const double_Array& u_triangular_mean)const;
   void params(void) const;
   double Double_occupancy(void) const;
-  double get_sign(void) const;
   mutable double param[12];
+
+  std::complex<double> phase_shift(const int spin , const int to_site,const int fr_site, const ivector& row)const;
+  double sign_structure(const int fr_site, const int to_site) const;
+  void get_derivatives(ComplexVector& derivatives) const ;
+  void get_vlayer(RealVector& sigma, const ivector& row) const;
+  std::complex<double> phase_shift_inverse(const int spin ,const int to_site_old,const int fr_site_old, const ivector& row)const;
+  double factorial(double num)const ;
+
 private:
 	Lattice lattice_;
 	FockBasis basis_state_;
@@ -71,14 +78,16 @@ private:
   int refresh_cycle_;
   int num_proposed_moves_;
   int num_accepted_moves_;
-
   int do_upspin_hop(void);
   int do_dnspin_hop(void);
   int do_spin_exchange(void);
-  int inv_update_upspin(const int& upspin, const ColVector& psi_row, 
-    const std::complex<double>& det_ratio);
-  int inv_update_dnspin(const int& dnspin, const RowVector& psi_col, 
-    const std::complex<double>& det_ratio);
+
+
+   std::complex<double> sign_value;
+   std::complex<double> full_sign_value;
+   double param_lambda;
+   mutable int doublon_increament_;
+   mutable int no_doublons_;
 };
 
 
